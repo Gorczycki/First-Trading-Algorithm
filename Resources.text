@@ -5,7 +5,12 @@ https://gbeced.github.io/pyalgotrade/
   "Python Algorithmic Trading Library with focus 
   on backtesting and support for paper-trading and live-trading."
 https://github.com/quantopian/zipline
+<<<<<<< HEAD
   Statistics and Machine Learning Libraries: You can use libraries like matplotlib, 
   scipy, statsmodels, and sklearn to support development, analysis, and visualization 
   of state-of-the-art trading systems.
 
+=======
+https://twitter.com/pyquantnews
+Posts lots of guides and help that may be key.
+>>>>>>> e19d48e1b7f0a1f75a99f3dd8e835e58da56f6de
