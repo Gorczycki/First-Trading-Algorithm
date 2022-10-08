@@ -12,6 +12,7 @@ get historical option price data in python with polygon.io API
 #import modules
 from polygon import RESTClient
 import datetime as dt
+from polygon.websocket import WebSocketClient, STOCKS_CLUSTER
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.offline import plot
