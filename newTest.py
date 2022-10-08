@@ -1,53 +1,79 @@
+# -*- coding: utf-8 -*-
+"""
+get historical option price data in python with polygon.io API
+@author: adam getbags
+"""
+
+
+#pip OR conda install
+#pip install polygon-api-client
+#pip install plotly
+
+#import modules
 from polygon import RESTClient
-from typing import cast
-from urllib3 import HTTPResponse
+import datetime as dt
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.offline import plot
 
-client = RESTClient()
+#api key from config
+from polygonAPIkey import polygonAPIkey
+# OR just assign your API as a string variable
+# polygonAPIkey = 'apiKeyGoesHere'
 
-aggs = cast(
-    HTTPResponse,
-    client.get_aggs(
-        "AAPL",
-        1,
-        "day",
-        "2022-04-01",
-        "2022-04-04",
-        raw=True,
-    ),
-)
-print(aggs.geturl())
-# https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2022-04-01/2022-04-04
-print(aggs.status)
-# 200
-print(aggs.data)
-# b'{
-#    "ticker": "AAPL",
-#    "queryCount": 2,
-#    "resultsCount": 2,
-#    "adjusted": true,
-#    "results": [
-#      {
-#        "v": 78251328,
-#        "vw": 173.4143,
-#        "o": 174.03,
-#        "c": 174.31,
-#        "h": 174.88,
-#        "l": 171.94,
-#        "t": 1648785600000,
-#        "n": 661160
-#      },
-#      {
-#        "v": 76545983,
-#        "vw": 177.4855,
-#        "o": 174.57,
-#        "c": 178.44,
-#        "h": 178.49,
-#        "l": 174.44,
-#        "t": 1649044800000,
-#        "n": 630374
-#      }
-#    ],
-#    "status": "OK",
-#    "request_id": "d8882a9d5194978819777f49c44b09c6",
-#    "count": 2
-#  }'
+#create client and authenticate w/ API key // rate limit 5 requests per min
+client = RESTClient(polygonAPIkey) # api_key is used
+
+contractNames = []
+for c in client.list_options_contracts(underlying_ticker = 'AAPL', limit = 1000):
+    contractNames.append(c)
+print(contractNames)
+
+#polygon data structure
+#type(contractNames[398])
+
+#to view individual contract general data
+contractData = contractNames[398]
+
+#get options ticker
+optionsTicker = contractData.ticker
+
+#daily options price bars
+dailyOptionData = client.get_aggs(ticker = optionsTicker, 
+                             multiplier = 1,
+                             timespan = 'day',
+                             from_ = '1900-01-01',
+                             to = '2100-01-01')
+
+#five minute price bars
+# intradayOptionData = client.get_aggs(ticker = optionsTicker, 
+#                              multiplier = 5,
+#                              timespan = 'minute',
+#                              from_ = '1900-01-01',
+#                              to = '2100-01-01')
+
+#two hour price bars
+# hourlyOptionData = client.get_aggs(ticker = optionsTicker, 
+#                              multiplier = 2,
+#                              timespan = 'hour',
+#                              from_ = '1900-01-01',
+#                              to = '2100-01-01')
+
+#list of polygon OptionsContract objects to DataFrame
+optionDataFrame = pd.DataFrame(dailyOptionData)
+
+#create Date column
+optionDataFrame['Date'] = optionDataFrame['timestamp'].apply(
+                          lambda x: pd.to_datetime(x*1000000))
+
+optionDataFrame = optionDataFrame.set_index('Date')
+
+#generate plotly figure
+fig = go.Figure(data=[go.Candlestick(x=optionDataFrame.index,
+                open=optionDataFrame['open'],
+                high=optionDataFrame['high'],
+                low=optionDataFrame['low'],
+                close=optionDataFrame['close'])])
+
+#open figure in browser
+plot(fig, auto_open=True)
