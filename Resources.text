@@ -9,4 +9,14 @@ https://github.com/quantopian/zipline
   scipy, statsmodels, and sklearn to support development, analysis, and visualization 
   of state-of-the-art trading systems.
 
-  
+Possible API Keys
+  https://pypi.org/project/googlefinance/
+    Google Finance API good documentation
+    compatible with Python
+
+  https://polygon.io/stocks?gclid=CjwKCAjwv4SaBhBPEiwA9YzZvH0_slHAPyfs6O-xwIiflcJSVwnJhu_ncoJn1goTWeyH4WOVV-MMUxoCmzcQAvD_BwE
+    Polygon API
+    Very quick response time
+    Excelleent documentation
+    Example code on github
+      -- I believe this is our best bet(AT)

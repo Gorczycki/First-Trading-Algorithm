@@ -9,4 +9,16 @@ No official algorithmic strategy, just yet. Example strategies being Stat Arb, M
 Obstacles: 
 Where to find the right api
 Where to obtain live market data.
-Server for live market data?
+Interacting with JSON data uisng Python
+
+Project outline / user stories
+  Aim to simulate gains from trades using relevant trading strategies
+    Strats
+      VWAP (Volume-weighted average price)
+      SMA (Volume-weighted average price)
+        Taking an average over a set number of days
+          user can simulate gaines/losses
+            User enters the stock 
+              User enters investment start date
+                  Investment end date
+              Calc if investment is positive of neg over the given period of days
