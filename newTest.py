@@ -4,7 +4,6 @@ get historical option price data in python with polygon.io API
 @author: adam getbags
 """
 
-
 #pip OR conda install
 #pip install polygon-api-client
 #pip install plotly

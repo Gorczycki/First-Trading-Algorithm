@@ -22,3 +22,10 @@ Project outline / user stories
               User enters investment start date
                   Investment end date
               Calc if investment is positive of neg over the given period of days
+
+Steps to take
+  Figure out how to interact with polygon API
+    Open to another API if its easier to use
+      Implement API data into a simple SMA profit/loss calculator
+      
+  
