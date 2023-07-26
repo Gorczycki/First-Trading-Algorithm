@@ -1,0 +1,78 @@
+import alpha_vantage as av
+import scipy as sc
+import math as math
+import numpy as numpy
+import pandas as pd
+import requests
+import matplotlib.pyplot as plt
+from numpy import array
+from alpha_vantage.timeseries import TimeSeries
+
+#import pprint
+#Alpha vantage key: 8KG20969KVFVZRWJ
+
+# Replace 'YOUR_API_KEY' with your actual AlphaVantage API key
+API_KEY = '8KG20969KVFVZRWJ'
+BASE_URL = 'https://www.alphavantage.co/query'
+
+# Example portfolio with initial cash allocation
+portfolio = {
+    'AAPL': 10,   # Allocate 10 units of AAPL
+    'MSFT': 5,    # Allocate 5 units of MSFT
+    'GOOGL': 2,   # Allocate 2 units of GOOGL
+}
+
+# Function to get historical price data for a given equity
+def get_historical_data(symbol):
+    params = {
+        'function': 'TIME_SERIES_DAILY',
+        'symbol': symbol,
+        'apikey': API_KEY,
+    }
+    response = requests.get(BASE_URL, params=params)
+    data = response.json()
+    return pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
+
+# Function to calculate portfolio value over time
+def calculate_portfolio_value(data, portfolio):
+    # Calculate equity values
+    for symbol in portfolio:
+        data[symbol + ' Value'] = data['4. close'] * portfolio[symbol]
+    # Calculate cash value
+    data['Cash'] = sum(portfolio.values())
+    # Calculate total portfolio value
+    data['Total Value'] = data[list(portfolio.keys()) + ['Cash']].sum(axis=1)
+    return data
+
+# Backtesting strategy (example: buy and hold)
+def backtesting_strategy(data):
+    data['MA_Fast'] = data['4. close'].rolling(window=10).mean()
+    data['MA_Slow'] = data['4. close'].rolling(window=50).mean()
+    data['Signal'] = 0
+    data.loc[data['MA_Fast'] > data['MA_Slow'], 'Signal'] = 1
+    data.loc[data['MA_Fast'] < data['MA_Slow'], 'Signal'] = -1
+    data['Position'] = data['Signal'].shift()
+    data['Daily_Return'] = data['4. close'].pct_change()
+    data['Strategy_Return'] = data['Daily_Return'] * data['Position'].shift()
+    data['Cumulative_Return'] = (1 + data['Strategy_Return']).cumprod()
+    return data
+
+# Main function
+if __name__ == '__main__':
+    # Get historical data for each equity in the portfolio
+    for symbol in portfolio:
+        historical_data = get_historical_data(symbol)
+        # Do backtesting calculations
+        backtesting_data = backtesting_strategy(historical_data)
+        # Calculate portfolio value over time
+        portfolio_data = calculate_portfolio_value(backtesting_data, portfolio)
+        # Visualize portfolio performance
+        plt.plot(portfolio_data.index, portfolio_data['Total Value'], label=symbol)
+
+    plt.legend()
+    plt.xlabel('Date')
+    plt.ylabel('Portfolio Value')
+    plt.title('Portfolio Performance')
+    plt.show()
+
+
